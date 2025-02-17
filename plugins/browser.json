@@ -1,0 +1,25 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-geolocation": {
+      "GPS_REQUIRED": "true",
+      "PACKAGE_NAME": "com.enactus.qashconnect"
+    },
+    "cordova-plugin-camera": {
+      "PACKAGE_NAME": "com.enactus.qashconnect"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.enactus.qashconnect"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.enactus.qashconnect"
+    }
+  },
+  "dependent_plugins": {}
+}

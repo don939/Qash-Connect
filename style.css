@@ -1,0 +1,549 @@
+body {
+    font-family: 'Times New Roman', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.hero-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('assets/hero-bg.jpg');
+    background-size: cover;
+    position: relative;
+}
+
+.option-card {
+    background: #FFE4B5;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 1rem;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 6px #000000;
+    border: 2px solid #000000;
+    color: #000000;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+}
+
+.map-container {
+    height: 400px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.qr-container {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.panic-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    border: none;
+    font-weight: bold;
+}
+
+.admin-panel {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+
+       /* Custom Cursor */
+       .custom-cursor {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #000;
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Particles Background */
+    #particles-js {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 228, 181, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    }
+
+    /* Scroll Progress Bar */
+    .scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(to right, #FFB347, #ffcb8c);
+        z-index: 9999;
+    }
+
+    /* Back to Top Button */
+    #back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: none;
+        z-index: 999;
+        animation: bounce 2s infinite;
+    }
+
+    /* Preloader Animation */
+    .preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #FFE4B5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .loader {
+        display: flex;
+        gap: 10px;
+    }
+
+    .circle {
+        width: 20px;
+        height: 20px;
+        background: #000;
+        border-radius: 50%;
+        animation: bounce 0.5s alternate infinite;
+    }
+
+    .circle:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .circle:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-20px); }
+    }
+
+    /* Hover Effects */
+    .nav-link:hover {
+        transform: scale(1.1);
+        transition: transform 0.3s;
+    }
+
+    .option-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .option-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Dark Mode Styles */
+    body.dark-mode {
+        background: #333;
+        color: #fff;
+    }
+
+    body.dark-mode .navbar {
+        background: #222 !important;
+        border-bottom: 2px solid #fff !important;
+    }
+
+    body.dark-mode .navbar-brand,
+    body.dark-mode .nav-link {
+        color: #fff !important;
+    }
+
+    body.dark-mode .option-card {
+        background: #444444 !important;
+        color: #fff !important;
+    }
+
+    body.dark-mode h1,
+    body.dark-mode h2,
+    body.dark-mode h3,
+    body.dark-mode p {
+        color: #fff !important;
+    }
+
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: #FFE4B5 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-nav {
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        .nav-item {
+            text-align: center;
+        }
+
+        body {
+            padding-top: 56px;
+        }
+
+        .hero-section {
+            padding-top: 20px;
+            padding-bottom: 70px;
+        }
+
+        .map-container {
+            height: 300px;
+        }
+
+        .option-card {
+            margin: 0.5rem 0;
+        }
+
+        /* Add iOS safe areas support */
+        .content {
+            padding-top: calc(env(safe-area-inset-top) + 56px);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* Adjust scroll down button position for mobile */
+        .scroll-down-container {
+            margin-top: -120px;
+            margin-bottom: 300px;
+        }
+    }
+
+    /* Remove hover effects on mobile */
+    @media (hover: none) {
+        .option-card:hover {
+            transform: none;
+        }
+    }
+
+    /* Add these styles to your CSS */
+    .active-request-card {
+        transition: transform 0.2s ease;
+    }
+
+    .active-request-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.4em 0.8em;
+    }
+
+    #active-requests-list .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    #active-requests-list .card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Add these styles for icons and new elements */
+    .display-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #FFE4B5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .display-icon i {
+        transform: scale(1);
+        transition: transform 0.3s ease;
+    }
+
+    .display-icon:hover i {
+        transform: scale(1.2);
+    }
+
+    .filter-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .filter-buttons .btn {
+        transition: all 0.3s ease;
+    }
+
+    .filter-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    #active-requests-list .card i {
+        transition: transform 0.3s ease;
+    }
+
+    #active-requests-list .card:hover i {
+        transform: scale(1.1);
+    }
+
+    .badge i {
+        margin-right: 4px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .filter-buttons {
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .filter-buttons .btn {
+            white-space: nowrap;
+        }
+    }
+
+    /* Scroll Down Button Styles */
+    .scroll-down-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: -170px;
+        margin-bottom: 120px;
+    }
+
+    .scroll-down-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.3s ease;
+    }
+
+    .scroll-down-btn:hover {
+        transform: translateY(5px);
+    }
+
+    .mouse {
+        width: 26px;
+        height: 40px;
+        border: 2px solid #000000;
+        border-radius: 20px;
+        position: relative;
+    }
+
+    .mouse-wheel {
+        width: 4px;
+        height: 8px;
+        background: #000000;
+        position: absolute;
+        top: 7px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+        animation: mouse-wheel 1.5s infinite;
+    }
+
+    .scroll-text {
+        color: #000000;
+        font-size: 14px;
+        margin-top: 8px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        animation: fade-in-out 2s infinite;
+    }
+
+    /* Dark mode support */
+    body.dark-mode .mouse {
+        border-color: #FFE4B5;
+    }
+
+    body.dark-mode .mouse-wheel {
+        background: #FFE4B5;
+    }
+
+    body.dark-mode .scroll-text {
+        color: #FFE4B5;
+    }
+
+    @keyframes mouse-wheel {
+        0% {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, 10px);
+            opacity: 0;
+        }
+    }
+
+    @keyframes fade-in-out {
+        0%, 100% {
+            opacity: 0.5;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+
+    /* QR Scanner Styles */
+    .qr-scanner-container {
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+        background: #000;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    #qr-reader {
+        width: 100%;
+        background: #000;
+    }
+
+    #qr-reader video {
+        width: 100% !important;
+        height: auto !important;
+        border-radius: 8px;
+    }
+
+    .scanner-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        z-index: 100;
+    }
+
+    .scanner-controls button {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: none;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+    }
+
+    .scanner-controls button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .scan-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .scan-target {
+        width: 200px;
+        height: 200px;
+        border: 2px solid #FFE4B5;
+        border-radius: 20px;
+        position: relative;
+        animation: scan 2s infinite;
+    }
+
+    .scan-target::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #FFE4B5;
+        animation: scanline 2s infinite;
+    }
+
+    @keyframes scan {
+        0% { transform: scale(0.95); opacity: 0.8; }
+        50% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    @keyframes scanline {
+        0% { top: 0; }
+        50% { top: 100%; }
+        100% { top: 0; }
+    }
+
+    #qr-reader-results {
+        padding: 15px;
+        background: #fff;
+        border-radius: 0 0 10px 10px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .scan-result {
+        padding: 10px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 5px;
+        border-left: 4px solid #000;
+    }
+
+    /* Dark mode support */
+    body.dark-mode .qr-scanner-container {
+        background: #222;
+    }
+
+    body.dark-mode #qr-reader-results {
+        background: #333;
+        color: #fff;
+    }
+
+    body.dark-mode .scan-result {
+        background: #444;
+        border-left-color: #FFE4B5;
+    }

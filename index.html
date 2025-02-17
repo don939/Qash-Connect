@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<!-- Hammer.js for touch gestures -->
+<script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+<!-- Google Maps Visualization API -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FFE4B5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <title>Qash Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMapsAPI" async defer onerror="handleMapsError()"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+</head>
+<body>
+    <!-- Form Validation Script -->
+    <script>
+        function validateForm(formId) {
+            const form = document.getElementById(formId);
+            if (!form) return true;
+
+            form.classList.add('was-validated');
+            
+            const inputs = form.querySelectorAll('input, select, textarea');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                // Remove existing error messages
+                const existingError = input.nextElementSibling;
+                if (existingError && existingError.classList.contains('error-message')) {
+                    existingError.remove();
+                }
+
+                if (!input.checkValidity()) {
+                    isValid = false;
+                    showInputError(input);
+                }
+            });
+
+            return isValid;
+        }
+
+        function showInputError(input) {
+            const errorMessage = input.validationMessage;
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message invalid-feedback';
+            errorDiv.textContent = errorMessage;
+            input.parentNode.appendChild(errorDiv);
+        }
+
+        // Add event listeners to all forms
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    if (!validateForm(form.id)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+     
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+
+    <!-- Floating Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="btn btn-dark" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+ 
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Welcome to Enactus Qash Connect!
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Add Particles.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+
+    <script>
+        let mapsLoaded = false;
+
+        function initMapsAPI() {
+            mapsLoaded = true;
+            if (document.getElementById('cash-at-hand-section').style.display === 'block') {
+                initializeMap('map');
+            }
+            if (document.getElementById('cash-to-give-section').style.display === 'block') {
+                initializeMap('provider-map');
+            }
+        }
+
+        // Initialize Particles.js with lower opacity and fewer particles
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 60 },
+                color: { value: '#000000' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.3 },
+                size: { value: 2 },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: true,
+                    attract: {
+                        enable: true,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: ['grab', 'bubble']
+                        }
+                    }
+                }
+            }
+        });
+
+        // Improved Custom Cursor
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.custom-cursor');
+            if (cursor) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            }
+        });
+
+        // Hide cursor when mouse leaves window
+        document.addEventListener('mouseleave', () => {
+            const cursor = document.querySelector('.custom-cursor');
+            if (cursor) {
+                cursor.style.display = 'none';
+            }
+        });
+
+        // Show cursor when mouse enters window
+        document.addEventListener('mouseenter', () => {
+            const cursor = document.querySelector('.custom-cursor');
+            if (cursor) {
+                cursor.style.display = 'block';
+            }
+        });
+
+        // Improved loading overlay handling
+        window.addEventListener('load', function() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        // Scroll Progress
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.querySelector(".scroll-progress").style.width = scrolled + "%";
+            
+            // Back to Top Button
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("back-to-top").style.display = "block";
+            } else {
+                document.getElementById("back-to-top").style.display = "none";
+            }
+        };
+
+        // Scroll to Top
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Show Welcome Toast
+        window.addEventListener('load', () => {
+            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+            setTimeout(() => toast.show(), 2000);
+            
+            // Hide Preloader
+            document.querySelector('.preloader').style.display = 'none';
+        });
+
+        // Toggle Dark Mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.getElementById('darkModeToggle');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                btn.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        // QR Code Scanner
+        async function initQRScanner() {
+            const scannerContainer = document.getElementById('qr-reader');
+                const video = document.getElementById('qr-video');
+                
+            try {
+                scannerContainer.innerHTML = '<div class="alert alert-info">Requesting camera access...</div>';
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" } 
+                });
+                
+                scannerContainer.innerHTML = ''; // Clear loading message
+                video.style.display = 'block';
+                video.srcObject = stream;
+                await video.play();
+
+                // Create QR scanner instance with progress feedback
+                const scanner = new Html5Qrcode("qr-reader");
+                
+                scanner.start(
+                    video,
+                    {
+                        fps: 10,
+                        qrbox: 250
+                    },
+                    async (decodedText) => {
+                        try {
+                            const data = JSON.parse(decodedText);
+                            updateScannedDetails(data);
+                            await stopScanner(scanner, stream);
+                            showToast('Success', 'QR Code scanned successfully!');
+                        } catch (error) {
+                            showToast('Error', 'Invalid QR code format');
+                        }
+                    },
+                    (error) => console.warn(error)
+                );
+            } catch (error) {
+                scannerContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        ${error.name === 'NotAllowedError' 
+                            ? 'Camera access denied. Please enable camera permissions.' 
+                            : 'Error accessing camera. Please try again.'}
+                    </div>
+                `;
+            }
+        }
+
+        // Add helper functions
+        function updateScannedDetails(data) {
+            const details = document.getElementById('scanned-details');
+            details.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Scanned Details</h5>
+                        <p class="card-text">Name: ${escapeHtml(data.name)}</p>
+                        <p class="card-text">Phone: ${escapeHtml(data.phone)}</p>
+                        <p class="card-text">Amount: ${escapeHtml(data.amount)}</p>
+                    </div>
+                </div>
+            `;
+            details.style.display = 'block';
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function stopScanner(scanner, stream) {
+            await scanner.stop();
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        function showToast(title, message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastHtml = `
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-${type}">
+                        <strong class="me-auto">${title}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+            const toast = toastContainer.lastElementChild;
+            const bsToast = new bootstrap.Toast(toast);
+            
+            bsToast.show();
+            
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+
+        // Sample cash requests data - in a real app, this would come from your backend
+        const sampleRequests = [
+            {
+                id: 1,
+                name: "John Doe",
+                amount: 500,
+                distance: 0.5,
+                location: { lat: -26.2041, lng: 28.0473 }
+            },
+            {
+                id: 2,
+                name: "Jane Smith",
+                amount: 1000,
+                distance: 1.2,
+                location: { lat: -26.2051, lng: 28.0483 }
+            }
+        ];
+
+        // Function to display cash requests
+        function displayCashRequests() {
+            const requestsList = document.getElementById('cash-requests-list');
+            requestsList.innerHTML = '';
+
+            sampleRequests.forEach(request => {
+                const requestElement = document.createElement('div');
+                requestElement.className = 'list-group-item animate__animated animate__fadeIn';
+                requestElement.style.background = '#FFE4B5';
+                requestElement.style.border = '1px solid #000000';
+                requestElement.style.marginBottom = '10px';
+                requestElement.style.borderRadius = '8px';
+                
+                requestElement.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 style="color: #000000;">${request.name}</h6>
+                            <p class="mb-1" style="color: #000000;">Amount: R${request.amount}</p>
+                            <small style="color: #000000;">${request.distance} km away</small>
+                        </div>
+                        <button class="btn btn-sm" 
+                                style="background: #000000; color: #FFE4B5;"
+                                onclick="acceptRequest(${request.id})">
+                            Accept
+                        </button>
+                    </div>
+                `;
+                
+                requestsList.appendChild(requestElement);
+
+                // Add marker to map for this request
+                if (activeMap) {
+                    new google.maps.Marker({
+                        position: request.location,
+                        map: activeMap,
+                        title: `${request.name} - R${request.amount}`,
+                        icon: {
+                            url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+                        }
+                    });
+                }
+            });
+        }
+
+        // Function to handle accepting a request
+        function acceptRequest(requestId) {
+            const request = sampleRequests.find(r => r.id === requestId);
+            if (request) {
+                showToast(
+                    'Request Accepted', 
+                    `You've accepted the cash request from ${request.name} for R${request.amount}`,
+                    'success'
+                );
+                
+                // In a real app, you would:
+                // 1. Send this to your backend
+                // 2. Update the UI to show the accepted status
+                // 3. Maybe start a chat with the requester
+                // 4. Show directions to the meeting point
+            }
+        }
+
+        // Update the showSection function to display requests when showing cash-to-give section
+        const originalShowSection = showSection;
+        showSection = function(section) {
+            originalShowSection(section);
+            if (section === 'cash-to-give') {
+                displayCashRequests();
+            }
+        };
+
+        function displayActiveRequests() {
+            const requestsList = document.getElementById('active-requests-list');
+            
+            const activeRequests = [
+                {
+                    id: 1,
+                    name: "John D.",
+                    amount: 500,
+                    location: "Sandton",
+                    distance: 2.5,
+                    timestamp: "10 mins ago",
+                    status: "urgent" // Add status for different icons
+                },
+                {
+                    id: 2,
+                    name: "Sarah M.",
+                    amount: 1000,
+                    location: "Rosebank",
+                    distance: 1.8,
+                    timestamp: "15 mins ago",
+                    status: "normal"
+                }
+            ];
+
+            requestsList.innerHTML = activeRequests.map(request => `
+                <div class="col-md-4">
+                    <div class="card h-100 animate__animated animate__fadeIn" 
+                         style="background: white; border: 1px solid #000000;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">
+                                        <i class="fas fa-user-circle text-primary me-2"></i>
+                                        ${request.name}
+                                    </h6>
+                                    <p class="mb-1">
+                                        <i class="fas fa-money-bill-wave text-success me-2"></i>
+                                        R${request.amount}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                        ${request.location} (${request.distance} km)
+                                    </small>
+                                </div>
+                                <div>
+                                    <span class="badge ${request.status === 'urgent' ? 'bg-danger' : 'bg-success'}">
+                                        <i class="fas ${request.status === 'urgent' ? 'fa-exclamation-circle' : 'fa-clock'}"></i>
+                                        ${request.timestamp}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm w-100" 
+                                        style="background: #000000; color: #FFE4B5;">
+                                    <i class="fas fa-handshake me-2"></i>
+                                    Respond to Request
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function respondToRequest(requestId) {
+            // Show confirmation modal
+            const modal = new bootstrap.Modal(document.getElementById('confirmResponseModal'));
+            document.getElementById('confirm-request-id').value = requestId;
+            modal.show();
+        }
+
+        // Add this modal to your HTML
+        const modalHtml = `
+        <div class="modal fade" id="confirmResponseModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background: #FFE4B5; border: 2px solid #000000;">
+                    <div class="modal-header" style="background: #000000; color: #FFE4B5;">
+                        <h5 class="modal-title">
+                            <i class="fas fa-handshake me-2"></i>
+                            Confirm Response
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-question-circle fa-3x text-primary"></i>
+                        </div>
+                        <p class="text-center">Are you sure you want to respond to this cash request?</p>
+                        <input type="hidden" id="confirm-request-id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>
+                            Cancel
+                        </button>
+                        <button type="button" class="btn" 
+                                style="background: #000000; color: #FFE4B5;"
+                                onclick="confirmResponse()">
+                            <i class="fas fa-check me-2"></i>
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        // Add this function to handle the confirmation
+        function confirmResponse() {
+            const requestId = document.getElementById('confirm-request-id').value;
+            
+            // Here you would make an API call to your backend
+            // For now, we'll just show a success message
+            showToast('Success', 'You have responded to the request. The requester will be notified.', 'success');
+            
+            // Close the modal
+            bootstrap.Modal.getInstance(document.getElementById('confirmResponseModal')).hide();
+        }
+
+        // Add this to your initialization code
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add modal to the document
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Display active requests
+            displayActiveRequests();
+            
+            // Refresh requests every minute
+            setInterval(displayActiveRequests, 60000);
+        });
+
+        // Add this to your existing JavaScript
+        function scrollToRequests() {
+            const requestsSection = document.querySelector('.active-requests-section');
+            if (requestsSection) {
+                requestsSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // Add this to hide the scroll button when reaching the requests section
+        document.addEventListener('scroll', function() {
+            const scrollBtn = document.querySelector('.scroll-down-container');
+            const requestsSection = document.querySelector('.active-requests-section');
+            
+            if (scrollBtn && requestsSection) {
+                const requestsTop = requestsSection.offsetTop;
+                const scrollPosition = window.scrollY + window.innerHeight;
+                
+                if (scrollPosition > requestsTop) {
+                    scrollBtn.style.opacity = '0';
+                    scrollBtn.style.pointerEvents = 'none';
+                } else {
+                    scrollBtn.style.opacity = '1';
+                    scrollBtn.style.pointerEvents = 'auto';
+                }
+            }
+        });
+
+        // Add WebSocket connection handling
+        let ws;
+
+        function initializeWebSocket() {
+            ws = new WebSocket('ws://localhost:8080');
+            
+            ws.onopen = function() {
+                // Register user with WebSocket server
+                ws.send(JSON.stringify({
+                    type: 'register',
+                    userId: currentUserId
+                }));
+            };
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'match_update') {
+                    updateMatchDisplay(data.matches);
+                }
+            };
+            
+            ws.onclose = function() {
+                // Attempt to reconnect after 5 seconds
+                setTimeout(initializeWebSocket, 5000);
+            };
+        }
+
+        // Update the findMatches function to handle errors better
+        async function findMatches(amount) {
+            if (!navigator.geolocation) {
+                showToast('Error', 'Geolocation is not supported by your browser', 'danger');
+                return;
+            }
+
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    });
+                });
+
+                const response = await fetch('get_matches.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        amount: amount,
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    displayMatches(data.data);
+                } else {
+                    showToast('Notice', data.message, 'warning');
+                }
+            } catch (error) {
+                if (error.code === error.PERMISSION_DENIED) {
+                    showToast('Error', 'Location access denied. Please enable location services.', 'danger');
+                } else {
+                    showToast('Error', 'Failed to find matches: ' + error.message, 'danger');
+                }
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to display matches
+        function displayMatches(matchData) {
+            const matchesContainer = document.getElementById('matches-container');
+            
+            matchesContainer.innerHTML = matchData.matches.map(match => `
+                <div class="match-card card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">${match.name}</h5>
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt text-danger"></i> 
+                            Distance: ${match.distance.toFixed(2)} km
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-star text-warning"></i>
+                            Rating: ${match.rating}/5
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-money-bill-wave text-success"></i>
+                            Amount: R${match.amount}
+                        </p>
+                        <button class="btn btn-primary" onclick="showRoute(${match.id})">
+                            <i class="fas fa-directions"></i> Show Route
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Store routes data for later use
+            window.matchRoutes = matchData.routes;
+        }
+
+        // Function to show route
+        function showRoute(matchId) {
+            const route = window.matchRoutes[matchId];
+            if (!route) return;
+
+            // Show route details in a modal
+            const modal = new bootstrap.Modal(document.getElementById('routeModal'));
+            const modalBody = document.querySelector('#routeModal .modal-body');
+            
+            modalBody.innerHTML = `
+                <div class="route-info mb-3">
+                    <p><strong>Distance:</strong> ${route.distance}</p>
+                    <p><strong>Duration:</strong> ${route.duration}</p>
+                </div>
+                <div class="route-steps">
+                    <h6>Directions:</h6>
+                    <ol>
+                        ${route.steps.map(step => `
+                            <li>${step.html_instructions}</li>
+                        `).join('')}
+                    </ol>
+                </div>
+            `;
+
+            modal.show();
+        }
+
+        // Add this to your existing JavaScript
+        class QRScanner {
+            constructor() {
+                this.html5QrcodeScanner = null;
+                this.currentCamera = 'environment';
+                this.scanning = false;
+                this.lastResult = null;
+                this.scanTimeout = null;
+                this.cameras = [];
+            }
+
+            async initialize() {
+                try {
+                    // First check if the browser supports getUserMedia
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        throw new Error('Your browser does not support camera access');
+                    }
+
+                    // Request camera permission first
+                    await navigator.mediaDevices.getUserMedia({ video: true });
+
+                    // Get available cameras
+                    this.cameras = await Html5Qrcode.getCameras();
+                    
+                    if (!this.cameras || !this.cameras.length) {
+                        throw new Error('No cameras found on your device');
+                    }
+
+                    // Initialize the scanner with the first available camera
+                    this.html5QrcodeScanner = new Html5Qrcode("qr-reader");
+                    
+                    // Set initial camera
+                    this.currentCamera = this.cameras[0].id;
+                    
+                    this.setupScanner();
+                    this.setupControls();
+                    
+                    showToast('Success', 'Camera initialized successfully', 'success');
+                } catch (error) {
+                    if (error.name === 'NotAllowedError') {
+                        showToast('Error', 'Camera access was denied. Please enable camera access in your browser settings.', 'error');
+                    } else if (error.name === 'NotFoundError') {
+                        showToast('Error', 'No camera device found on your device.', 'error');
+                    } else if (error.name === 'NotReadableError') {
+                        showToast('Error', 'Camera is already in use by another application.', 'error');
+                    } else {
+                        showToast('Error', `Camera initialization failed: ${error.message}`, 'error');
+                    }
+                    console.error('Camera initialization error:', error);
+                }
+            }
+
+            async setupScanner() {
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0,
+                    showTorchButtonIfSupported: true,
+                    showZoomSliderIfSupported: true,
+                    defaultZoom: 2,
+                    videoConstraints: {
+                        deviceId: this.currentCamera,
+                        facingMode: "environment",
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                document.getElementById('startScan').addEventListener('click', () => {
+                    if (!this.scanning) {
+                        this.startScanning(config);
+                    } else {
+                        this.stopScanning();
+                    }
+                });
+            }
+
+            async startScanning(config) {
+                try {
+                    await this.html5QrcodeScanner.start(
+                        config.videoConstraints.deviceId,
+                        config,
+                        this.handleScan.bind(this),
+                        this.handleError.bind(this)
+                    );
+                    this.scanning = true;
+                    document.getElementById('startScan').innerHTML = '<i class="fas fa-stop"></i> Stop Scanner';
+                } catch (error) {
+                    showToast('Error', 'Failed to start scanner: ' + error.message, 'error');
+                    console.error('Scanner start error:', error);
+                }
+            }
+
+            setupControls() {
+                const switchCameraBtn = document.getElementById('switchCamera');
+                
+                // Only show switch camera button if multiple cameras are available
+                if (this.cameras.length > 1) {
+                    switchCameraBtn.style.display = 'block';
+                    switchCameraBtn.addEventListener('click', async () => {
+                        try {
+                            // Find next camera in the list
+                            const currentIndex = this.cameras.findIndex(camera => camera.id === this.currentCamera);
+                            const nextIndex = (currentIndex + 1) % this.cameras.length;
+                            this.currentCamera = this.cameras[nextIndex].id;
+
+                            // Restart scanner with new camera if currently scanning
+                            if (this.scanning) {
+                                await this.stopScanning();
+                                await this.startScanning({
+                                    ...this.config,
+                                    videoConstraints: {
+                                        ...this.config.videoConstraints,
+                                        deviceId: this.currentCamera
+                                    }
+                                });
+                            }
+                        } catch (error) {
+                            showToast('Error', 'Failed to switch camera: ' + error.message, 'error');
+                        }
+                    });
+                } else {
+                    switchCameraBtn.style.display = 'none';
+                }
+            }
+
+            handleError(error) {
+                console.warn(`QR Scanner Error: ${error}`);
+                if (error.includes('NotAllowedError')) {
+                    showToast('Error', 'Camera permission denied', 'error');
+                } else if (error.includes('NotFoundError')) {
+                    showToast('Error', 'Camera not found', 'error');
+                } else if (error.includes('NotReadableError')) {
+                    showToast('Error', 'Camera is in use by another application', 'error');
+                }
+            }
+        }
+
+        // Initialize QR Scanner
+        document.addEventListener('DOMContentLoaded', () => {
+            const qrScanner = new QRScanner();
+            qrScanner.initialize();
+        });
+
+        // Function to handle transactions
+        function initiateTransaction(data) {
+            // Show confirmation modal
+            const modal = new bootstrap.Modal(document.getElementById('confirmTransactionModal'));
+            document.getElementById('transactionDetails').innerHTML = `
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Amount:</strong> R${data.amount}</p>
+                <p><strong>Phone:</strong> ${data.phone}</p>
+            `;
+            document.getElementById('confirmTransaction').onclick = () => {
+                processTransaction(data);
+                modal.hide();
+            };
+            modal.show();
+        }
+
+        // Add this modal to your HTML
+        const transactionModal = `
+        <div class="modal fade" id="confirmTransactionModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Transaction</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="transactionDetails"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirmTransaction">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', transactionModal);
+
+        function handleMapsError() {
+            console.error('Failed to load Google Maps API');
+            const mapElements = document.querySelectorAll('.map-container');
+            mapElements.forEach(element => {
+                element.innerHTML = `
+                    <div class="alert alert-warning">
+                        Failed to load map. Please check your internet connection and try again.
+                    </div>
+                `;
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // Add these helper functions to your JavaScript
+        function checkBrowserCompatibility() {
+            const constraints = {
+                getUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+                mediaDevices: 'mediaDevices' in navigator,
+                secure: location.protocol === 'https:' || location.hostname === 'localhost'
+            };
+
+            if (!constraints.secure) {
+                throw new Error('Camera access requires HTTPS or localhost');
+            }
+
+            if (!constraints.getUserMedia) {
+                throw new Error('Your browser does not support camera access');
+            }
+
+            if (!constraints.mediaDevices) {
+                throw new Error('Your browser does not support media devices');
+            }
+
+            return true;
+        }
+
+        function showFallbackMessage(message) {
+            const fallback = document.getElementById('qr-reader-fallback');
+            const messageElement = document.getElementById('fallback-message');
+            if (fallback && messageElement) {
+                messageElement.textContent = message;
+                fallback.style.display = 'block';
+                document.getElementById('qr-reader').style.display = 'none';
+            }
+        }
+    </script>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg" style="background: #FFE4B5; border-bottom: 2px solid #000000;">
+        <div class="container">
+            <a class="navbar-brand" href="#" style="color: #000000;">Qash Connect</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('hero')" style="color: #000000;">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('cash-at-hand')" style="color: #000000;">Cash at Hand</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('cash-to-give')" style="color: #000000;">Cash to Give</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="openAdminLogin()" style="color: #000000;">Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-dark" onclick="toggleDarkMode()">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <br><br>
+
+    <!-- Hero Section -->
+    <div class="hero-section animate__animated animate__fadeIn">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <h1 class="display-4 mb-4" style="color: #000000;">Welcome to Qash Connect</h1>
+                    <p class="lead mb-5" style="color: #000000;">Choose your role below</p>
+                    <div class="row g-4">
+                        <div class="col-md-6 mb-4">
+                            <div class="option-card animate__animated animate__fadeInLeft h-100" onclick="selectRole('cash-at-hand')" style="background: #FFE4B5;">
+                                <h3 style="color: #000000;">Cash at Hand</h3>
+                                <p style="color: #000000;">I need to transfer cash</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="option-card animate__animated animate__fadeInRight h-100" onclick="selectRole('cash-to-give')" style="background: #FFE4B5;">
+                                <h3 style="color: #000000;">Cash to Give</h3>
+                                <p style="color: #000000;">I can provide cash</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-down-container">
+        <button class="scroll-down-btn" onclick="scrollToRequests()">
+            <div class="mouse">
+                <div class="mouse-wheel"></div>
+            </div>
+            <span class="scroll-text">Scroll Down</span>
+        </button>
+    </div>
+
+    <section class="container mt-5 active-requests-section">
+        <div class="text-center mb-4">
+            <div class="display-icon mb-3">
+                <i class="fas fa-exchange-alt fa-3x" style="color: #000000;"></i>
+            </div>
+            <h2 style="color: #000000;">Active Cash Requests</h2>
+            <p class="text-muted">Find cash exchange requests near you</p>
+        </div>
+        <div class="filter-buttons mb-4">
+            <button class="btn btn-outline-dark me-2">
+                <i class="fas fa-filter me-2"></i>
+                All
+            </button>
+            <button class="btn btn-outline-danger me-2">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Urgent
+            </button>
+            <button class="btn btn-outline-success me-2">
+                <i class="fas fa-map-marker-alt me-2"></i>
+                Nearby
+            </button>
+            <button class="btn btn-outline-primary">
+                <i class="fas fa-sort-amount-down me-2"></i>
+                Amount
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                    <div class="card-header" style="background: #000000; color: #FFE4B5;">
+                        <h5 class="mb-0">Active Cash Requests</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="active-requests-list" class="row g-3">
+                            <!-- Requests will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <br><br>
+
+    <!-- Cash at Hand Section -->
+    <div id="cash-at-hand-section" class="animate__animated animate__fadeIn" style="display: none; background: #FFE4B5; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6 animate__animated animate__slideInLeft">
+                    <h2 style="color: #000000; font-weight: bold; margin-bottom: 30px;" class="animate__animated animate__pulse">Enter Your Details</h2>
+                    <form id="details-form" onsubmit="generateQRCode(event)">
+                        <div class="mb-4">
+                            <input type="text" name="name" class="form-control animate__animated animate__fadeInUp" 
+                                placeholder="Full Name" required 
+                                style="border: 2px solid #000000; border-radius: 10px; padding: 12px;">
+                        </div>
+                        <div class="mb-4">
+                            <input type="tel" name="phone" class="form-control animate__animated animate__fadeInUp" 
+                                placeholder="Phone Number" required 
+                                style="border: 2px solid #000000; border-radius: 10px; padding: 12px;">
+                        </div>
+                        <div class="mb-4">
+                            <input type="number" name="amount" class="form-control animate__animated animate__fadeInUp" 
+                                placeholder="Amount Needed" required 
+                                style="border: 2px solid #000000; border-radius: 10px; padding: 12px;">
+                        </div>
+                        <button type="submit" class="btn animate__animated animate__bounceIn" 
+                            style="background: #000000; color: #FFE4B5; padding: 12px 30px; border-radius: 25px;">
+                            Generate QR Code
+                        </button>
+                    </form>
+                    <div class="qr-container animate__animated animate__zoomIn" id="qrcode" 
+                        style="margin-top: 30px; padding: 20px; background: white; border-radius: 10px; 
+                        display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </div>
+                </div>
+                <div class="col-md-6 animate__animated animate__slideInRight">
+                    <div class="map-container" id="map" 
+                        style="height: 400px; 
+                               width: 100%; 
+                               border-radius: 15px; 
+                               overflow: hidden; 
+                               box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+                               border: 3px solid #000000;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <!-- Cash to Give Section -->
+    <div id="cash-to-give-section" style="display: none; background: #FFE4B5;">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="map-container" id="provider-map" 
+                        style="height: 400px; 
+                               width: 100%; 
+                               border-radius: 15px; 
+                               overflow: hidden; 
+                               box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+                               border: 3px solid #000000;">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h2 style="color: #000000;">Nearby Requests</h2>
+                    <div id="nearby-requests"></div>
+                    <div class="mt-4">
+                        <button class="btn mb-2 w-100" style="background: #000000; color: #FFE4B5;">Mark as Complete</button>
+                        <button class="panic-button w-100" style="background: #000000; color: #FFE4B5;">Emergency Button</button>
+                    </div>
+                    <div class="mt-4">
+                        <h3 style="color: #000000;">Scan QR Code</h3>
+                        <button onclick="initQRScanner()" class="btn mb-2" style="background: #000000; color: #FFE4B5;">
+                            Start Scanner
+                        </button>
+                        <div id="qr-reader" style="width: 100%; border-radius: 10px; overflow: hidden;">
+                            <video id="qr-video" style="width: 100%; border-radius: 10px; border: 2px solid #000000;"></video>
+                        </div>
+                        <div id="scanned-details" class="mt-3" style="display: none;">
+                            <h4 style="color: #000000;">Scanned Details:</h4>
+                            <div id="scanned-name" style="color: #000000;"></div>
+                            <div id="scanned-phone" style="color: #000000;"></div>
+                            <div id="scanned-amount" style="color: #000000;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <!-- Admin Panel Section -->
+    <div id="admin-panel-section" style="display: none;">
+        <div class="container py-5">
+            <div class="admin-panel" style="background: #FFE4B5;">
+                <h2 class="mb-4" style="color: #000000;">Admin Dashboard</h2>
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #000000;">Hourly Users</h5>
+                                <h3 id="hourly-users" style="color: #000000;">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #000000;">Daily Users</h5>
+                                <h3 id="daily-users" style="color: #000000;">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #000000;">Weekly Users</h5>
+                                <h3 id="weekly-users" style="color: #000000;">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: #000000;">Yearly Users</h5>
+                                <h3 id="yearly-users" style="color: #000000;">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-header" style="background: #000000; color: #FFE4B5;">
+                                <h5 class="mb-0">User Activity Analytics</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="userActivityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-header" style="background: #000000; color: #FFE4B5;">
+                                <h5 class="mb-0">Transaction Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="transactionPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-header" style="background: #000000; color: #FFE4B5;">
+                                <h5 class="mb-0">Transaction Volume</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="transactionVolumeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card" style="background: #FFE4B5; border: 2px solid #000000;">
+                            <div class="card-header" style="background: #000000; color: #FFE4B5;">
+                                <h5 class="mb-0">Geographic Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="locationChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button class="btn" style="background: #000000; color: #FFE4B5;" onclick="logoutAdmin()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <!-- Admin Login Modal -->
+    <div class="modal fade" id="adminLoginModal">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background: #FFE4B5;">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="color: #000000;">Admin Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="admin-login-form">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="admin-username" placeholder="Username" required style="border: 2px solid #000000;">
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="admin-password" placeholder="Password" required style="border: 2px solid #000000;">
+                        </div>
+                        <button type="submit" class="btn" style="background: #000000; color: #FFE4B5;">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <!-- Add this in your HTML where you want the QR scanner -->
+    <div class="qr-scanner-container">
+        <div id="qr-reader"></div>
+        <div id="qr-reader-fallback" style="display: none;">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="fallback-message">Unable to access camera</span>
+                <button class="btn btn-sm btn-warning ms-3" onclick="window.location.reload()">
+                    Retry
+                </button>
+            </div>
+        </div>
+        <div class="scanner-controls">
+            <button id="startScan" class="btn btn-primary">
+                <i class="fas fa-camera"></i> Start Scanner
+            </button>
+            <button id="switchCamera" class="btn btn-secondary">
+                <i class="fas fa-sync"></i> Switch Camera
+            </button>
+            <button id="toggleFlash" class="btn btn-info">
+                <i class="fas fa-bolt"></i> Toggle Flash
+            </button>
+        </div>
+        <div class="scan-overlay">
+            <div class="scan-target"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Admin credentials (in real application, this should be handled securely on the server)
+        const ADMIN_CREDENTIALS = {
+            username: 'admin',
+            password: 'admin123'
+        };
+
+        let userActivityChart;
+        let html5QrcodeScanner;
+
+        // Global variables for maps
+        let userLocation = null;
+        let activeMap = null;
+        let activeMarker = null;
+        let watchId = null;
+
+        // Hide loading animation when page is fully loaded
+        window.addEventListener('load', function() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        });
+
+        // Initialize map with error handling and default location
+        function initializeMap(mapId) {
+            // Add error handling in case the map element doesn't exist
+            const mapElement = document.getElementById(mapId);
+            if (!mapElement) {
+                console.error(`Map element with id '${mapId}' not found`);
+                return;
+            }
+
+            // Default coordinates (Johannesburg, South Africa)
+            const defaultLocation = {
+                lat: -26.2041,
+                lng: 28.0473
+            };
+
+            try {
+                // Create map with default location
+                const mapOptions = {
+                    zoom: 15,
+                    center: defaultLocation,
+                    zoomControl: true,
+                    mapTypeControl: false,
+                    scaleControl: true,
+                    streetViewControl: false,
+                    rotateControl: false,
+                    fullscreenControl: true
+                };
+
+                // Initialize the map
+                activeMap = new google.maps.Map(mapElement, mapOptions);
+
+                // Try to get user's location
+                if (navigator.geolocation) {
+                    // Watch position for real-time updates
+                    watchId = navigator.geolocation.watchPosition(
+                        (position) => {
+                            userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+
+                            // Update map center
+                            activeMap.setCenter(userLocation);
+
+                            // Update or create marker
+                            if (activeMarker) {
+                                activeMarker.setPosition(userLocation);
+                            } else {
+                                activeMarker = new google.maps.Marker({
+                                    position: userLocation,
+                                    map: activeMap,
+                                    title: "Your Location",
+                                    animation: google.maps.Animation.DROP
+                                });
+                            }
+
+                            // Add click listener to marker
+                            activeMarker.addListener('click', () => {
+                                const infoWindow = new google.maps.InfoWindow({
+                                    content: `
+                                        <div style="color: #000000; padding: 10px;">
+                                            <h5>Your Location</h5>
+                                            <p>Lat: ${userLocation.lat.toFixed(6)}</p>
+                                            <p>Lng: ${userLocation.lng.toFixed(6)}</p>
+                                        </div>
+                                    `
+                                });
+                                infoWindow.open(activeMap, activeMarker);
+                            });
+                        },
+                        (error) => {
+                            console.error("Error getting location:", error);
+                            handleLocationError(true, activeMap.getCenter());
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    handleLocationError(false, activeMap.getCenter());
+                }
+
+                // Add map controls
+                addMapControls(activeMap);
+            } catch (error) {
+                console.error("Error initializing map:", error);
+            }
+        }
+
+        // Add custom map controls
+        function addMapControls(map) {
+            // Recenter button
+            const centerControl = document.createElement('div');
+            centerControl.style.cssText = `
+                background-color: #000000;
+                border: 2px solid #FFE4B5;
+                border-radius: 25px;
+                box-shadow: 0 2px 6px rgba(0,0,0,.3);
+                cursor: pointer;
+                margin: 10px;
+                padding: 10px;
+                text-align: center;
+            `;
+            centerControl.innerHTML = '<i class="fas fa-crosshairs" style="color: #FFE4B5;"></i>';
+            centerControl.addEventListener('click', () => {
+                if (userLocation) {
+                    map.setCenter(userLocation);
+                    map.setZoom(15);
+                }
+            });
+
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(centerControl);
+        }
+
+        // Handle location errors
+        function handleLocationError(browserHasGeolocation, pos) {
+            const message = browserHasGeolocation
+                ? "Error: The Geolocation service failed."
+                : "Error: Your browser doesn't support geolocation.";
+            
+            // Show error message to user
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                background-color: #FFE4B5;
+                border: 2px solid #000000;
+                border-radius: 10px;
+                color: #000000;
+                margin: 10px;
+                padding: 10px;
+                text-align: center;
+            `;
+            errorDiv.textContent = message;
+            
+            activeMap.controls[google.maps.ControlPosition.TOP_CENTER].push(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Clean up when changing sections
+        function cleanupMap() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            activeMap = null;
+            activeMarker = null;
+        }
+
+        // Update the showSection function
+        function showSection(section) {
+            // Clean up existing map
+            cleanupMap();
+
+            // Hide all sections first
+            document.querySelector('.hero-section').style.display = 'none';
+            document.getElementById('cash-at-hand-section').style.display = 'none';
+            document.getElementById('cash-to-give-section').style.display = 'none';
+            document.getElementById('admin-panel-section').style.display = 'none';
+
+            // Show the selected section and initialize map if needed
+            switch(section) {
+                case 'hero':
+                    document.querySelector('.hero-section').style.display = 'block';
+                    break;
+                case 'cash-at-hand':
+                    document.getElementById('cash-at-hand-section').style.display = 'block';
+                    if (mapsLoaded) {
+                        requestAnimationFrame(() => initializeMap('map'));
+                    }
+                    break;
+                case 'cash-to-give':
+                    document.getElementById('cash-to-give-section').style.display = 'block';
+                    if (mapsLoaded) {
+                        requestAnimationFrame(() => initializeMap('provider-map'));
+                    }
+                    break;
+                case 'admin':
+                    document.getElementById('admin-panel-section').style.display = 'block';
+                    break;
+            }
+        }
+
+        // Role selection
+        function selectRole(role) {
+            showSection(role === 'cash-at-hand' ? 'cash-at-hand' : 'cash-to-give');
+        }
+
+        // Admin functions
+        function openAdminLogin() {
+            const adminModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+            adminModal.show();
+        }
+
+        const ADMIN_SESSION_KEY = 'admin_session';
+
+        function checkAdminSession() {
+            return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+        }
+
+        function loginAdmin(username, password) {
+            // In production, this should be an API call
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
+                return true;
+            }
+            return false;
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem(ADMIN_SESSION_KEY);
+            showSection('hero');
+            if (userActivityChart) {
+                userActivityChart.destroy();
+            }
+            showToast('Success', 'Logged out successfully');
+        }
+
+        // Admin login form handler
+        document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (loginAdmin(username, password)) {
+                showSection('admin');
+                bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+                updateUserStats();
+                initializeAdminDashboard();
+                showToast('Success', 'Logged in successfully');
+            } else {
+                showToast('Error', 'Invalid credentials', 'danger');
+            }
+        });
+
+        // Update user statistics and chart
+        function updateUserStats() {
+            const hourly = Math.floor(Math.random() * 50);
+            const daily = Math.floor(Math.random() * 200);
+            const weekly = Math.floor(Math.random() * 1000);
+            const yearly = Math.floor(Math.random() * 10000);
+
+            document.getElementById('hourly-users').textContent = hourly;
+            document.getElementById('daily-users').textContent = daily;
+            document.getElementById('weekly-users').textContent = weekly;
+            document.getElementById('yearly-users').textContent = yearly;
+        }
+
+        function initializeAdminDashboard() {
+            // User Activity Chart (Line chart)
+            const activityCtx = document.getElementById('userActivityChart').getContext('2d');
+            new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                        label: 'Active Users',
+                        data: [65, 59, 80, 81, 56, 55],
+                    borderColor: '#000000',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(255, 228, 181, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly User Activity'
+                        }
+                    }
+                }
+            });
+
+            // Transaction Distribution (Pie chart)
+            const pieCtx = document.getElementById('transactionPieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Cash at Hand', 'Cash to Give', 'Completed', 'Cancelled'],
+                    datasets: [{
+                        data: [30, 25, 35, 10],
+                        backgroundColor: [
+                            '#FFB347',
+                            '#000000',
+                            '#98FB98',
+                            '#FF6B6B'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Transaction Volume (Bar chart)
+            const volumeCtx = document.getElementById('transactionVolumeChart').getContext('2d');
+            new Chart(volumeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Transaction Volume',
+                        data: [12, 19, 3, 5, 2, 3, 7],
+                        backgroundColor: '#000000'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Geographic Distribution (Horizontal bar chart)
+            const locationCtx = document.getElementById('locationChart').getContext('2d');
+            new Chart(locationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Johannesburg', 'Pretoria', 'Cape Town', 'Durban', 'Port Elizabeth'],
+                    datasets: [{
+                        label: 'Users by Location',
+                        data: [300, 250, 200, 150, 100],
+                        backgroundColor: '#FFB347',
+                        borderColor: '#000000',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // QR Code Generation
+        function generateQRCode(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            // Create data object
+            const data = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                amount: formData.get('amount')
+            };
+
+            // Convert to JSON string
+            const jsonString = JSON.stringify(data);
+
+            // Generate QR code
+            const qr = qrcode(0, 'L');
+            qr.addData(jsonString);
+            qr.make();
+
+            // Display QR code
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = qr.createImgTag(10);
+            qrContainer.style.display = 'block';
+        }
+
+        // Emergency button
+        document.querySelector('.panic-button').addEventListener('click', function() {
+            alert('Emergency services have been notified. Stay calm and wait for assistance.');
+            // Add actual emergency service integration here
+        });
+
+        function handleMapsError() {
+            console.error('Failed to load Google Maps API');
+            const mapElements = document.querySelectorAll('.map-container');
+            mapElements.forEach(element => {
+                element.innerHTML = `
+                    <div class="alert alert-warning">
+                        Failed to load map. Please check your internet connection and try again.
+                    </div>
+                `;
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

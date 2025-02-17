@@ -1,0 +1,12 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "Qash Connect",
+  "short_name": "Qash Connect",
+  "version": "com.enactus.qashconnect",
+  "description": "A cash exchange platform",
+  "author": "Enactus Team",
+  "icons": [],
+  "start_url": "index.html",
+  "theme_color": "#FFE4B5"
+}

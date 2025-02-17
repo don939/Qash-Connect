@@ -1,0 +1,38 @@
+{
+  "devDependencies": {
+    "cordova-android": "^13.0.0",
+    "cordova-browser": "^7.0.0",
+    "cordova-plugin-camera": "^8.0.0",
+    "cordova-plugin-device": "^3.0.0",
+    "cordova-plugin-geolocation": "^5.0.0",
+    "cordova-plugin-network-information": "^3.0.0"
+  },
+  "cordova": {
+    "platforms": [
+      "browser",
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
+      },
+      "cordova-plugin-camera": {
+        "ANDROIDX_CORE_VERSION": "1.6.+"
+      },
+      "cordova-plugin-device": {},
+      "cordova-plugin-network-information": {}
+    }
+  },
+  "dependencies": {
+    "@react-navigation/native": "^6.x.x",
+    "@react-navigation/stack": "^6.x.x",
+    "expo-camera": "~13.6.0",
+    "expo-barcode-scanner": "~12.7.0",
+    "expo-permissions": "~14.4.0",
+    "react-native-maps": "^1.x.x",
+    "react-native-qrcode-svg": "^6.x.x",
+    "react-native-svg": "^13.x.x",
+    "react-native-safe-area-context": "^4.x.x",
+    "react-native-screens": "^3.x.x"
+  }
+}
